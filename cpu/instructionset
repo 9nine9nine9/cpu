@@ -1,0 +1,112 @@
+if blank, assume nop (GC+)
+
+Fetch from ROM is as follows:
+ROO IGI GCR
+PC+
+
+000000	
+000001	push	(Push next 36-bit value from ROM - this skips the rest of the ig)
+	ROO DSI
+	PC+ UCR	// Skip to next ig
+	
+000010	>r	(Move top of dstack onto rstack)
+	DSO RSI GC+
+
+000011	r>	(Move top of rstack onto dstack
+	RSO DSI GC+
+
+000100	dup	(Duplicate top)
+	(better expressed in verilog than pseudo-uCode)
+
+000101	
+000110	
+000111	
+001000	add
+	DSO AAI FLR
+	DNO ABI
+	ASO DSI FLI GC+
+
+001001	sub
+	DSO AAI FLR
+	DNO ABI SUB
+	ASO DSI FLI GC+
+
+001010	
+001011	
+001100	
+001101	
+001110	
+001111	
+010000	
+010001	
+010010	
+010011	
+010100	
+010101	
+010110	
+010111	
+011000	
+011001	
+011010	
+011011	
+011100	
+011101	
+011110	
+011111	
+100000	
+100001	
+100010	
+100011	
+100100	
+100101	
+100110	
+100111	
+101000	
+101001	
+101010	
+101011	
+101100	
+101101	
+101110	
+101111	
+110000	j	(unconditional jump to location in top of stack)
+	DSO PCI UCR
+
+110001	jz	(jump if last calculation was zero else continue)
+	DSO PCI UCR FLR
+
+110010	jo	(jump if last calculation overflowed)
+	DSO PCI UCR FLR
+
+110011	jn	(jump if last calculation was negative)
+	DSO PCI UCR FLR
+
+110100	c	(these are the same as jump, but calls instead)
+	PCO RSI
+	DSO PCI UCR 
+
+110101	cz
+	PCO RSI
+	DSO PCI UCR FLR
+
+110110	co
+	PCO RSI
+	DSO PCI UCR FLR
+
+110111	cn
+	PCO RSI
+	DSO PCI UCR FLR
+
+111000	l	(unconditional loop to start of IG)
+	GCR UC2
+
+111001	lz	(loop till lr == 0)
+111010	
+111011	
+111100	
+111101	
+111110	ret	(jump to value on the rstack)
+	RSO PCI UCR GCR
+
+111111	hlt	(halt execution)
+	HLT
